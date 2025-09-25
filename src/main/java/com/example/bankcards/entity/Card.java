@@ -1,0 +1,33 @@
+package com.example.bankcards.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+@Entity
+@Table(name = "cards")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Card {
+    @Id
+    String number;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    User user;
+
+    @Column(name = "created", nullable = false)
+    final LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    CardStatus status = CardStatus.BLOCKED;
+
+    @Column(name = "balance", precision = 19, scale = 2)
+    BigDecimal balance = BigDecimal.ZERO;
+}

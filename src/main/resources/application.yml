@@ -1,8 +1,35 @@
 #
 # application.yml — главный конфигурационный файл Spring Boot.
 
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
+#Что нужно сделать:
+#  - Указать настройки подключения к базе данных.
+#  - Указать порт приложения.
+#  - Настроить параметры безопасности и JWT.
+#  - Включить Swagger UI.
+
+
+server.port: 8080
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/bank_cards
+    username: dbuser
+    password: 12345
+
+  jpa:
+    hibernate.ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+      default_schema: public
+
+  output.ansi.enabled: ALWAYS
+
+logging.level:
+  org.springframework:
+    orm.jpa: INFO
+    transaction: INFO
+    transaction.interceptor: INFO
+    orm.jpa.JpaTransactionManager: INFO
+  org.zalando.logbook: TRACE
