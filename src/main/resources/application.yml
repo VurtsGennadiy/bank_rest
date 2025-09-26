@@ -33,3 +33,4 @@ logging.level:
     transaction.interceptor: INFO
     orm.jpa.JpaTransactionManager: INFO
   org.zalando.logbook: TRACE
+  com.example.bankcards: TRACE

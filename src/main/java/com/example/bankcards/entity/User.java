@@ -28,4 +28,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     UserRole role;
+
+    /*
+    TODO шифрование пароля
+     */
+    @Column(name = "password", nullable = false)
+    String password;
 }

@@ -1,0 +1,32 @@
+package com.example.bankcards.util;
+
+import com.example.bankcards.dto.param.UserSearchParam;
+import com.example.bankcards.entity.User;
+import org.springframework.data.jpa.domain.Specification;
+
+/**
+ * Класс для построения спецификации для поиска пользователей
+ */
+
+public class UserSpecifications {
+    public static Specification<User> userSearchSpec(UserSearchParam param) {
+        return nameLike(param.getName()).and(emailLike(param.getEmail()));
+    }
+
+    public static Specification<User> nameLike(String name) {
+        if (name == null || name.isEmpty()) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(root.get("name"), "%" + name + "%");
+    }
+
+
+    public static Specification<User> emailLike(String email) {
+        if (email == null || email.isEmpty()) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(root.get("email"), "%" + email + "%");
+    }
+}
