@@ -2,6 +2,7 @@ package com.example.bankcards.util;
 
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardFullDto;
+import com.example.bankcards.dto.CardShortDto;
 import com.example.bankcards.entity.Card;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Маппинг между сущностями и DTO для card
  */
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CardMapper {
 
@@ -26,4 +28,6 @@ public interface CardMapper {
 
     @Mapping(target = "number", source = "maskedNumber")
     CardFullDto toCardFullDto(Card card, String maskedNumber);
+
+    List<CardShortDto> toCardShortDto(List<Card> cards);
 }

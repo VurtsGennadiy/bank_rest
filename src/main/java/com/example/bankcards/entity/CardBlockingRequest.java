@@ -1,8 +1,7 @@
 package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -12,9 +11,12 @@ import java.time.temporal.ChronoUnit;
 @Table(name = "card_blocking_requests")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
 public class CardBlockingRequest {
     @EqualsAndHashCode.Include
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,5 +30,5 @@ public class CardBlockingRequest {
     private final LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
     @Column(name = "solved")
-    boolean solved;
+    boolean solved = false;
 }

@@ -1,14 +1,18 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.CardBlockingRequestFullDto;
 import com.example.bankcards.dto.CardCreateRequest;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardFullDto;
+import com.example.bankcards.dto.param.CardBlockingRequestSearchParam;
 import com.example.bankcards.dto.param.CardSearchParam;
 import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardBlockingRequest;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardDeleteException;
 import com.example.bankcards.exception.NotFoundException;
+import com.example.bankcards.repository.CardBlockingRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.*;
@@ -28,7 +32,9 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
+    private final CardBlockingRequestRepository cardBlockingRequestRepository;
     private final CardMapper cardMapper;
+    private final CardBlockingRequestMapper cardBlockingRequestMapper;
 
     @Override
     @Transactional
@@ -73,14 +79,26 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    public CardDto blockCard(String cardNumber) {
+    public CardDto blockCardByNumber(String cardNumber) {
         String maskedNumber = CardNumberMasker.mask(cardNumber);
-        log.trace("Request to block card '{}'", maskedNumber);
+        log.trace("Request to block card number'{}'", maskedNumber);
         Card card = cardRepository.findById(cardNumber)
                 .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", cardNumber)));
         card.setStatus(CardStatus.BLOCKED);
         log.info("Card '{}' set status BLOCKED", maskedNumber);
         return cardMapper.toCardDto(card, maskedNumber);
+    }
+
+    @Override
+    @Transactional
+    public CardDto blockCardByRequest(Long cardBlockingRequestId) {
+        log.trace("Request to block card id:'{}'", cardBlockingRequestId);
+        CardBlockingRequest request = cardBlockingRequestRepository.findById(cardBlockingRequestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Card blocking request with id %s not found", cardBlockingRequestId)));
+        CardDto response = blockCardByNumber(request.getCardNumber());
+        request.setSolved(true);
+        log.info("Card blocking request with id {} was solved", cardBlockingRequestId);
+        return response;
     }
 
     @Override
@@ -113,7 +131,16 @@ public class CardServiceImpl implements CardService {
         log.trace("Request to get card {}", maskedNumber);
         Card card = cardRepository.findByNumberJoinOwner(cardNumber)
                 .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", cardNumber)));
-        CardFullDto full = cardMapper.toCardFullDto(card, maskedNumber);
-        return full;
+        return cardMapper.toCardFullDto(card, maskedNumber);
+    }
+
+    @Override
+    public List<CardBlockingRequestFullDto> getCardBlockingRequests(CardBlockingRequestSearchParam params) {
+        log.trace("Get card blocking requests {}", params);
+        Pageable page = PageRequest.of(params.getFrom() / params.getSize(), params.getSize());
+        List<CardBlockingRequest> requests = cardBlockingRequestRepository
+                .findAll(CardBlockingRequestSpecifications.cardBlockingRequestSearchSpec(params), page).getContent();
+        requests.forEach(request -> request.setCardNumber(CardNumberMasker.mask(request.getCardNumber())));
+        return cardBlockingRequestMapper.toDto(requests);
     }
 }

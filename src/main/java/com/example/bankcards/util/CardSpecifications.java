@@ -33,7 +33,7 @@ public class CardSpecifications {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("user").get("id"), userId);
+                criteriaBuilder.equal(root.get("owner").get("id"), userId);
     }
 
     public static Specification<Card> cardStatusIs(CardStatus status) {

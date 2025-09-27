@@ -1,8 +1,10 @@
 package com.example.bankcards.controller.adminAPI;
 
+import com.example.bankcards.dto.CardBlockingRequestFullDto;
 import com.example.bankcards.dto.CardCreateRequest;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardFullDto;
+import com.example.bankcards.dto.param.CardBlockingRequestSearchParam;
 import com.example.bankcards.dto.param.CardSearchParam;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.service.CardService;
@@ -22,7 +24,7 @@ import java.util.List;
 @RequestMapping("/admin/card")
 @RequiredArgsConstructor
 @Validated
-public class CardController {
+public class AdminCardController {
     private final CardService cardService;
     private final String datePattern = "yyyy-MM-dd";
 
@@ -59,6 +61,13 @@ public class CardController {
         );
     }
 
+    // Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса
+    @PostMapping("/get")
+    @ResponseStatus(HttpStatus.OK)
+    public CardFullDto getCard(@RequestBody String cardNumber) {
+        return cardService.getCard(cardNumber.trim());
+    }
+
     @PutMapping("/activate")
     @ResponseStatus(HttpStatus.OK)
     public CardDto activateCard(@RequestBody String cardNumber) {
@@ -67,14 +76,31 @@ public class CardController {
 
     @PutMapping("/block")
     @ResponseStatus(HttpStatus.OK)
-    public CardDto blockCard(@RequestBody String cardNumber) {
-        return cardService.blockCard(cardNumber.trim());
+    public CardDto blockCard(@RequestBody(required = false) String cardNumber,
+                             @RequestParam(required = false) @Positive Long requestId) {
+        if (requestId != null) {
+            return cardService.blockCardByRequest(requestId);
+        } else if (cardNumber != null) {
+            return cardService.blockCardByNumber(cardNumber.trim());
+        } else {
+            throw new IllegalArgumentException("Необходимо указать id запроса на блокировку либо номер карты");
+        }
     }
 
-    // Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса
-    @PostMapping("/get")
-    @ResponseStatus(HttpStatus.OK)
-    public CardFullDto getCard(@RequestBody String cardNumber) {
-        return cardService.getCard(cardNumber.trim());
+    @GetMapping("/blocking-request")
+    public List<CardBlockingRequestFullDto> getBlockingRequests(@RequestParam(required = false) Boolean solved,
+                                                                @RequestParam(required = false) @DateTimeFormat(pattern = datePattern) LocalDate createdFrom,
+                                                                @RequestParam(required = false) @DateTimeFormat(pattern = datePattern) LocalDate createdTo,
+                                                                @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                                @RequestParam(defaultValue = "20") @Positive Integer size) {
+        return cardService.getCardBlockingRequests(
+                CardBlockingRequestSearchParam.builder()
+                        .solved(solved)
+                        .createdFrom(createdFrom)
+                        .createdTo(createdTo)
+                        .from(from)
+                        .size(size)
+                        .build()
+        );
     }
 }

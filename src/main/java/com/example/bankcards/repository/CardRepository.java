@@ -17,4 +17,6 @@ public interface CardRepository extends JpaRepository<Card, String> {
 
     @Query("SELECT c FROM Card c JOIN FETCH c.owner WHERE c.number = :number")
     Optional<Card> findByNumberJoinOwner(String number);
+
+    Optional<Card> findCardByOwner_IdAndNumberContaining(Long ownerId, String number);
 }

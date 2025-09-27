@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("admin/users")
 @RequiredArgsConstructor
 @Validated
-public class UserController {
+public class AdminUserController {
     private final UserServiceImpl userService;
 
     @PostMapping
