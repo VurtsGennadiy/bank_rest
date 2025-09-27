@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -22,7 +23,7 @@ public class Card {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    User owner;
 
     @Column(name = "created", nullable = false)
     final LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
@@ -33,4 +34,7 @@ public class Card {
 
     @Column(name = "balance", precision = 19, scale = 2)
     BigDecimal balance = BigDecimal.ZERO;
+
+    @Column(name = "expiration")
+    LocalDate expiration;
 }

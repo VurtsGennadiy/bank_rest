@@ -1,6 +1,6 @@
 package com.example.bankcards.util;
 
-import com.example.bankcards.dto.CreateUserRequest;
+import com.example.bankcards.dto.UserCreateRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
 import com.example.bankcards.entity.Card;
@@ -21,7 +21,7 @@ public interface UserMapper {
     List<UserDto> toDto(List<User> users);
 
     @Mapping(target = "id", ignore = true)
-    User toEntity(CreateUserRequest dto);
+    User toEntity(UserCreateRequest dto);
 
     UserFullDto toFullDto(User user, List<Card> cards);
 }

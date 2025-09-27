@@ -8,12 +8,15 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * ДТО с необходимыми параметрами для создания нового пользователя
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateUserRequest {
+public class UserCreateRequest {
     @NotBlank
     @Size(min = 2, max = 255)
     String name;

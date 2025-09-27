@@ -1,6 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CreateUserRequest;
+import com.example.bankcards.dto.UserCreateRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
 import com.example.bankcards.dto.param.UserSearchParam;
@@ -8,7 +8,7 @@ import com.example.bankcards.dto.param.UserSearchParam;
 import java.util.List;
 
 public interface UserService {
-    UserDto createUser(CreateUserRequest userRequest);
+    UserDto createUser(UserCreateRequest userRequest);
 
     UserFullDto getUser(Long userId);
 

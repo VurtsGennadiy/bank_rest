@@ -1,6 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CreateUserRequest;
+import com.example.bankcards.dto.UserCreateRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
 import com.example.bankcards.dto.param.UserSearchParam;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(CreateUserRequest userRequest) {
+    public UserDto createUser(UserCreateRequest userRequest) {
         log.debug("Request to create new user: {}", userRequest);
         User user = userMapper.toEntity(userRequest);
         user = userRepository.save(user);
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         log.trace("Get user request");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", userId)));
-        List<Card> cards = cardRepository.findAllByUserId(userId);
+        List<Card> cards = cardRepository.findAllByOwnerId(userId);
         return userMapper.toFullDto(user, cards);
     }
 
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers(UserSearchParam params) {
         log.trace("Get users request {}", params);
         Pageable page = PageRequest.of(params.getFrom() / params.getSize(), params.getSize());
-        List<User> users = userRepository.findAll(UserSpecifications.userSearchSpec(params),  page).getContent();
+        List<User> users = userRepository.findAll(UserSpecifications.userSearchSpec(params), page).getContent();
         return userMapper.toDto(users);
     }
 }

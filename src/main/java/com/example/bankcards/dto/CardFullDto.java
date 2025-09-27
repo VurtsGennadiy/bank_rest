@@ -9,15 +9,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Информация о карте, не включающая описание владельца
+ * Полная информация о карте, включающая описание владельца
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CardShortDto {
+public class CardFullDto {
     String number;
+
+    UserDto owner;
 
     LocalDateTime created;
 

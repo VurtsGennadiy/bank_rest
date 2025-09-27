@@ -1,6 +1,6 @@
 package com.example.bankcards.controller.adminAPI;
 
-import com.example.bankcards.dto.CreateUserRequest;
+import com.example.bankcards.dto.UserCreateRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
 import com.example.bankcards.dto.param.UserSearchParam;
@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody @Valid CreateUserRequest userRequest) {
+    public UserDto createUser(@RequestBody @Valid UserCreateRequest userRequest) {
         return userService.createUser(userRequest);
     }
 
@@ -33,7 +33,6 @@ public class UserController {
                                   @RequestParam(required = false) String email,
                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
-
         return userService.getUsers(
                 UserSearchParam.builder()
                         .name(name)

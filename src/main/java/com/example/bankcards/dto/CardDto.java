@@ -8,16 +8,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Информация о карте, не включающая описание владельца
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CardShortDto {
+public class CardDto {
     String number;
+
+    Long ownerId;
 
     LocalDateTime created;
 
