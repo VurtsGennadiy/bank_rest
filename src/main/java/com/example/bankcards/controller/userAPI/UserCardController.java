@@ -1,10 +1,13 @@
 package com.example.bankcards.controller.userAPI;
 
+import com.example.bankcards.dto.CardBalanceDto;
 import com.example.bankcards.dto.CardBlockingRequestDto;
 import com.example.bankcards.dto.CardShortDto;
-import com.example.bankcards.dto.param.CardSearchParam;
+import com.example.bankcards.dto.MoneyTransferRequest;
+import com.example.bankcards.dto.filters.CardSearchParam;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.service.UserCardService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +52,19 @@ public class UserCardController {
     public CardBlockingRequestDto createBlockingCardRequest(@RequestBody String partCardNumber,
                                                             @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
         return userCardService.createCardBlockingRequest(userId, partCardNumber.trim());
+    }
+
+    // Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса
+    @PostMapping("/balance")
+    public CardBalanceDto getCardBalance(@RequestBody String partCardNumber,
+                                         @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
+        return userCardService.getBalance(userId, partCardNumber.trim());
+    }
+
+    @PostMapping("/transfer")
+    public CardBalanceDto transferMoney(@RequestBody @Valid MoneyTransferRequest transferParam,
+                                        @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
+        transferParam.setUserId(userId);
+        return userCardService.cardToCardTransfer(transferParam);
     }
 }

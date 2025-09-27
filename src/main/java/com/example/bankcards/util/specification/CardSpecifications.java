@@ -1,6 +1,6 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.specification;
 
-import com.example.bankcards.dto.param.CardSearchParam;
+import com.example.bankcards.dto.filters.CardSearchParam;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
 import org.springframework.data.jpa.domain.Specification;

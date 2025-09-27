@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.param;
+package com.example.bankcards.dto.filters;
 
 import com.example.bankcards.entity.CardStatus;
 import lombok.AccessLevel;

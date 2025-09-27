@@ -4,8 +4,8 @@ import com.example.bankcards.dto.CardBlockingRequestFullDto;
 import com.example.bankcards.dto.CardCreateRequest;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardFullDto;
-import com.example.bankcards.dto.param.CardBlockingRequestSearchParam;
-import com.example.bankcards.dto.param.CardSearchParam;
+import com.example.bankcards.dto.filters.CardBlockingRequestSearchParam;
+import com.example.bankcards.dto.filters.CardSearchParam;
 
 import java.util.List;
 

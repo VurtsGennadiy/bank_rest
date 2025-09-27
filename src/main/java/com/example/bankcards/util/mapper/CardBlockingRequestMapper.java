@@ -1,4 +1,4 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.mapper;
 
 import com.example.bankcards.dto.CardBlockingRequestDto;
 import com.example.bankcards.dto.CardBlockingRequestFullDto;

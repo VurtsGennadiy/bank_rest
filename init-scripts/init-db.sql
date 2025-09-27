@@ -27,3 +27,17 @@ CREATE TABLE "card_blocking_requests" (
   CONSTRAINT "fk_blocking_requests_user" FOREIGN KEY ("user_id") REFERENCES "users"("id"),
   CONSTRAINT "fk_blocking_requests_card" FOREIGN KEY ("card_number") REFERENCES "cards"("number")
 );
+
+-- денежные переводы
+CREATE TABLE money_transfer (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    from_card_number VARCHAR(16) NOT NULL,
+    to_card_number VARCHAR(16) NOT NULL,
+    amount DECIMAL NOT NULL,
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (from_card_number) REFERENCES cards(number),
+    FOREIGN KEY (to_card_number) REFERENCES cards(number)
+);
+

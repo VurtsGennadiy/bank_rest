@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.param;
+package com.example.bankcards.dto.filters;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

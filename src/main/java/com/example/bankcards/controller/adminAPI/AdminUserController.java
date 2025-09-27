@@ -3,7 +3,7 @@ package com.example.bankcards.controller.adminAPI;
 import com.example.bankcards.dto.UserCreateRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
-import com.example.bankcards.dto.param.UserSearchParam;
+import com.example.bankcards.dto.filters.UserSearchParam;
 import com.example.bankcards.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

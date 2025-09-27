@@ -1,6 +1,6 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.specification;
 
-import com.example.bankcards.dto.param.CardBlockingRequestSearchParam;
+import com.example.bankcards.dto.filters.CardBlockingRequestSearchParam;
 import com.example.bankcards.entity.CardBlockingRequest;
 import org.springframework.data.jpa.domain.Specification;
 
