@@ -7,6 +7,9 @@ import com.example.bankcards.dto.filters.UserSearchParam;
 
 import java.util.List;
 
+/**
+ * Сервис администратора для управления пользователями
+ */
 public interface UserService {
     UserDto createUser(UserCreateRequest userRequest);
 

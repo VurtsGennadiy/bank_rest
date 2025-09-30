@@ -33,7 +33,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CardServiceImpl implements CardService {
+public class AdminCardServiceImpl implements AdminCardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final CardBlockingRequestRepository cardBlockingRequestRepository;
@@ -87,7 +87,7 @@ public class CardServiceImpl implements CardService {
         String maskedNumber = CardNumberMasker.mask(cardNumber);
         log.trace("Request to block card number'{}'", maskedNumber);
         Card card = cardRepository.findById(cardNumber)
-                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", cardNumber)));
+                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", maskedNumber)));
         card.setStatus(CardStatus.BLOCKED);
         log.info("Card '{}' set status BLOCKED", maskedNumber);
         return cardMapper.toCardDto(card, maskedNumber);
@@ -111,10 +111,10 @@ public class CardServiceImpl implements CardService {
         String maskedNumber = CardNumberMasker.mask(cardNumber);
         log.trace("Request to delete card '{}'", maskedNumber);
         Card card = cardRepository.findById(cardNumber)
-                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", cardNumber)));
+                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", maskedNumber)));
         // запрещено удалять карту с ненулевым балансом
         if (!card.getBalance().equals(BigDecimal.ZERO)) {
-            throw new CardDeleteException(String.format("Card with number %s has non-zero balance", cardNumber));
+            throw new CardDeleteException(String.format("Card with number %s has non-zero balance", maskedNumber));
         }
         cardRepository.delete(card);
         log.info("Card '{}' was deleted", maskedNumber);
@@ -134,7 +134,7 @@ public class CardServiceImpl implements CardService {
         String maskedNumber = CardNumberMasker.mask(cardNumber);
         log.trace("Request to get card {}", maskedNumber);
         Card card = cardRepository.findByNumberJoinOwner(cardNumber)
-                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", cardNumber)));
+                .orElseThrow(() -> new NotFoundException(String.format("Card with number %s not found", maskedNumber)));
         return cardMapper.toCardFullDto(card, maskedNumber);
     }
 

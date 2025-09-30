@@ -8,6 +8,9 @@ import com.example.bankcards.dto.filters.CardSearchParam;
 
 import java.util.List;
 
+/**
+ * Сервис пользователя для операций с картами
+ */
 public interface UserCardService {
     List<CardShortDto> getCards(CardSearchParam params);
 

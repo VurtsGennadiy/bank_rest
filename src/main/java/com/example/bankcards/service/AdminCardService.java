@@ -9,7 +9,10 @@ import com.example.bankcards.dto.filters.CardSearchParam;
 
 import java.util.List;
 
-public interface CardService {
+/**
+ * Сервис администратора для управления картами
+ */
+public interface AdminCardService {
     CardDto createNewCard(CardCreateRequest cardRequest);
 
     CardDto activateCard(String cardNumber);

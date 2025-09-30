@@ -1,1 +1,1479 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API Системы для управления банковскими картами",
+    "contact": {
+      "name": "Вурц Геннадий",
+      "email": "vgd2001@gmail.com"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User: карты",
+      "description": "Пользовательский API для действий с картами"
+    },
+    {
+      "name": "Админ: Карты",
+      "description": "API для управления картами пользователей"
+    },
+    {
+      "name": "Админ: Пользователи",
+      "description": "API для управления пользователями"
+    }
+  ],
+  "paths": {
+    "/admin/card/block": {
+      "put": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Блокировка карты",
+        "description": "Поддерживается блокировка как по запросу от пользователя, так и без него.\nДля блокировки по запросу пользователя - передать в параметрах Id запроса на блокировку.\nДля блокировки без запроса от пользователя - указать в теле запроса номер карты, в параметрах запроса при этом ничего не указывать.",
+        "operationId": "blockCard",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "query",
+            "description": "Номер запроса на блокировку",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "description": "Номер карты",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234567876543210
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Карта заблокирована",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardDto",
+                  "example": {
+                    "number": "**** **** **** 1234",
+                    "ownerId": 1,
+                    "created": "2025-09-28T12:00",
+                    "expiration": "2026-09-28",
+                    "status": "BLOCKED",
+                    "balance": 1234.56
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Необходимо указать id запроса на блокировку либо номер карты"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Не найдена карта или не найден запрос на блокировку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Не найдена карта": {
+                    "description": "Не найдена карта",
+                    "value": {
+                      "error": "Card with number **** **** **** 1234 not found"
+                    }
+                  },
+                  "Не найден запрос на блокировку": {
+                    "description": "Не найден запрос на блокировку",
+                    "value": {
+                      "error": "Card blocking request with id 42 not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/card/activate": {
+      "put": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Активация карты",
+        "operationId": "activateCard",
+        "requestBody": {
+          "description": "Номер карты",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234567876543210
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Карта активирована",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number **** **** **** 1234 not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/card/transfer": {
+      "post": {
+        "tags": [
+          "User: карты"
+        ],
+        "summary": "Перевести деньги между картами",
+        "operationId": "transferMoney",
+        "parameters": [
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "Id пользователя",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "description": "Параметры перевода. Используются частичные номера карт. Обе карты должны иметь статус ACTIVE. Сумма перевода должна быть положительная",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoneyTransferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Перевод выполнен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBalanceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Поле amount должно быть больше 0."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number 6016 not found"
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Невозможно выполнить перевод",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Недостаточно средств на карте": {
+                    "description": "Недостаточно средств на карте",
+                    "value": {
+                      "error": "Insufficient funds on the card to perform the operation"
+                    }
+                  },
+                  "Карта не активна": {
+                    "description": "Карта не активна",
+                    "value": {
+                      "error": "The card **** **** **** 1895 status is not ACTIVE"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/card/block": {
+      "post": {
+        "tags": [
+          "User: карты"
+        ],
+        "summary": "Создать запрос на блокировку карты",
+        "operationId": "createBlockingCardRequest",
+        "parameters": [
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "Id пользователя",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "description": "Частичный номер карты (например последние 4 цифры)",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Запрос на блокировку карты создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBlockingRequestDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number 6016 not found"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ошибка уникальности или целостности данных",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Запрос на блокировку для этой карты уже существует"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/card/balance": {
+      "post": {
+        "tags": [
+          "User: карты"
+        ],
+        "summary": "Получить баланс карты",
+        "description": "Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса",
+        "operationId": "getCardBalance",
+        "parameters": [
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "Id пользователя",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "description": "Частичный номер карты (например последние 4 цифры)",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBalanceDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": [
+          "Админ: Пользователи"
+        ],
+        "summary": "Поиск пользователей",
+        "description": "Поддерживается фильтрация и пагинация",
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Имя пользователя, поддерживается поиск по части имени",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Иван"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email пользователя, поддерживается поиск по части email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "@mail"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Индекс первого элемента, с которого нужно вернуть",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Количество возвращаемых элементов",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Пользователи найдены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "examples": [
+                    "{\"error\":\"from должно быть не меньше 0.\"}"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Админ: Пользователи"
+        ],
+        "summary": "Создание нового пользователя",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Пользователь создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "examples": [
+                    "{\"error\": \"Поле password размер должен находиться в диапазоне от 8 до 255.\"}\n"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/card": {
+      "get": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Поиск карт",
+        "description": "Поддерживается фильтрация и пагинация",
+        "operationId": "getCards",
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "description": "Номер карты, поддерживается поиск по части номера",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": 1234
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "ID пользователя",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 42
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Статус карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "BLOCKED",
+                "EXPIRED"
+              ]
+            },
+            "example": "ACTIVE"
+          },
+          {
+            "name": "created",
+            "in": "query",
+            "description": "Дата создания карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2025-09-28"
+          },
+          {
+            "name": "expiration",
+            "in": "query",
+            "description": "Дата окончания срока действия карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2026-09-28"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Индекс первого элемента, с которого нужно вернуть",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Количество возвращаемых элементов",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список найденных карт",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные параметры запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "from должно быть не меньше 0."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Создание новой карты",
+        "operationId": "createNewCard",
+        "requestBody": {
+          "description": "Данные для создания новой карты. Поле balance опциональное, expiration должно быть в будущем. После создания карта имеет статус BLOCKED, нужно её активировать.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Карта создана",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные параметры запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Поле expiration должно содержать дату, которая еще не наступила."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "User with id 42 not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Удаление карты",
+        "description": "Запрещено удалять карту имеющую не нулевой баланс",
+        "operationId": "deleteCard",
+        "requestBody": {
+          "description": "Номер карты",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234567876543210
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Карта удалена"
+          },
+          "404": {
+            "description": "Карта не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number **** **** **** 1234 not found"
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Ошибка удаления карты",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number **** **** **** 1234 has non-zero balance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/card/get": {
+      "post": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Получение информации по карте",
+        "description": "Основная информация о карте, включая описание владельца. Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса",
+        "operationId": "getCard",
+        "requestBody": {
+          "description": "Номер карты",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": 1234567876543210
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Карта найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardFullDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "Card with number **** **** **** 1234 not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/card": {
+      "get": {
+        "tags": [
+          "User: карты"
+        ],
+        "summary": "Поиск карт пользователя",
+        "description": "Поддерживается фильтрация и пагинация",
+        "operationId": "getCards_1",
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "description": "Номер карты, поддерживается поиск по части номера карты",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": 1234
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Статус карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "BLOCKED",
+                "EXPIRED"
+              ]
+            },
+            "example": "ACTIVE"
+          },
+          {
+            "name": "created",
+            "in": "query",
+            "description": "Дата создания карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2025-09-28"
+          },
+          {
+            "name": "expiration",
+            "in": "query",
+            "description": "Дата окончания срока действия карты",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2026-09-28"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Индекс первого элемента, с которого нужно вернуть",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Количество возвращаемых элементов",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "Id пользователя",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список найденных карт",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardShortDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "from должно быть не меньше 0."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{userId}": {
+      "get": {
+        "tags": [
+          "Админ: Пользователи"
+        ],
+        "summary": "Получение пользователя по его Id",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id пользователя",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "exclusiveMinimum": 0
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Пользователь найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserFullDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "User with id 42 not found"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "userId должно быть больше 0."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/card/blocking-request": {
+      "get": {
+        "tags": [
+          "Админ: Карты"
+        ],
+        "summary": "Получение запросов на блокировку карт",
+        "description": "Поддерживается фильтрация и пагинация",
+        "operationId": "getBlockingRequests",
+        "parameters": [
+          {
+            "name": "solved",
+            "in": "query",
+            "description": "Статус решения запроса",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          },
+          {
+            "name": "createdFrom",
+            "in": "query",
+            "description": "Дата создания запроса с",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2025-09-28"
+          },
+          {
+            "name": "createdTo",
+            "in": "query",
+            "description": "Дата создания запроса по",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2025-09-29"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Индекс первого элемента, с которого нужно вернуть",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Количество элементов на странице",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "exclusiveMinimum": 0
+            },
+            "example": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список найденных запросов на блокировку карт",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CardBlockingRequestFullDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse",
+                  "example": {
+                    "error": "from должно быть не меньше 0."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CardDto": {
+        "type": "object",
+        "description": "Информация о банковской карте",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id владельца карты",
+            "example": 1
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "дата создания карты",
+            "example": "2025-09-28T12:00"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date",
+            "description": "дата окончания срока действия карты",
+            "example": "2026-09-28"
+          },
+          "status": {
+            "type": "string",
+            "description": "статус карты",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED"
+            ],
+            "example": "ACTIVE"
+          },
+          "balance": {
+            "type": "number",
+            "description": "баланс карты",
+            "example": 1234.56
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Сведения об ошибке",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Описание ошибки",
+            "example": "error message"
+          }
+        }
+      },
+      "MoneyTransferRequest": {
+        "type": "object",
+        "description": "Параметры перевода средств между счетами",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id пользователя",
+            "example": 1
+          },
+          "fromCardNumber": {
+            "type": "string",
+            "description": "часть номера карты, с которой осуществляется перевод (достаточно указать последние 4 цифры)",
+            "example": 1234
+          },
+          "toCardNumber": {
+            "type": "string",
+            "description": "часть номера карты, на которую осуществляется перевод (достаточно указать последние 4 цифры)",
+            "example": 5678
+          },
+          "amount": {
+            "type": "number",
+            "description": "сумма перевода",
+            "example": 100
+          }
+        }
+      },
+      "CardBalanceDto": {
+        "type": "object",
+        "description": "Информация о балансе карты",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "balance": {
+            "type": "number",
+            "description": "баланс карты",
+            "example": 1234.56
+          }
+        }
+      },
+      "CardBlockingRequestDto": {
+        "type": "object",
+        "description": "Объект запроса пользователя на блокировку карты",
+        "properties": {
+          "cardNumber": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "дата и время создания запроса",
+            "example": "2025-09-29T12:00"
+          },
+          "solved": {
+            "type": "boolean",
+            "description": "статус решения запроса",
+            "example": false
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "description": "Информация о пользователе",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id пользователя",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "имя пользователя",
+            "example": "Иван Иванов"
+          },
+          "email": {
+            "type": "string",
+            "description": "email пользователя",
+            "example": "ivan@mail.ru"
+          },
+          "role": {
+            "type": "string",
+            "description": "роль пользователя",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "example": "USER"
+          }
+        }
+      },
+      "UserCreateRequest": {
+        "type": "object",
+        "description": "Данные для создания нового пользователя",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "имя пользователя",
+            "example": "Иван Иванов",
+            "maxLength": 255,
+            "minLength": 2
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "email пользователя",
+            "example": "ivan@mail.ru",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "description": "роль пользователя",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "example": "USER"
+          },
+          "password": {
+            "type": "string",
+            "description": "пароль пользователя",
+            "example": "qwerty123",
+            "maxLength": 255,
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "password",
+          "role"
+        ]
+      },
+      "CardCreateRequest": {
+        "type": "object",
+        "description": "Данные для создания новой карты",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id пользователя",
+            "example": 1
+          },
+          "balance": {
+            "type": "number",
+            "description": "начальный баланс карты",
+            "example": 1000
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date",
+            "description": "дата окончания срока действия карты",
+            "example": "2026-01-01"
+          }
+        }
+      },
+      "CardFullDto": {
+        "type": "object",
+        "description": "Полная информация о карте, включающая описание владельца",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserDto",
+            "description": "информация о владельце карты"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "дата создания карты",
+            "example": "2025-09-28T12:00"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date",
+            "description": "дата окончания срока действия карты",
+            "example": "2026-09-28"
+          },
+          "status": {
+            "type": "string",
+            "description": "статус карты",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED"
+            ],
+            "example": "ACTIVE"
+          },
+          "balance": {
+            "type": "number",
+            "description": "баланс карты",
+            "example": 1234.56
+          }
+        }
+      },
+      "CardShortDto": {
+        "type": "object",
+        "description": "Информация о банковской карте, не включающая информацию о владельце",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "дата создания карты",
+            "example": "2025-09-28T12:00"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date",
+            "description": "дата окончания срока действия карты",
+            "example": "2026-09-28"
+          },
+          "status": {
+            "type": "string",
+            "description": "статус карты",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED"
+            ],
+            "example": "ACTIVE"
+          },
+          "balance": {
+            "type": "number",
+            "description": "баланс карты",
+            "example": 1234.56
+          }
+        }
+      },
+      "UserFullDto": {
+        "type": "object",
+        "description": "Информация о пользователе, включающая информацию о его картах",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id пользователя",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "имя пользователя",
+            "example": "Иван Иванов"
+          },
+          "email": {
+            "type": "string",
+            "description": "email пользователя",
+            "example": "ivan@mail.ru"
+          },
+          "role": {
+            "type": "string",
+            "description": "роль пользователя",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "example": "USER"
+          },
+          "cards": {
+            "type": "array",
+            "description": "список карт пользователя",
+            "items": {
+              "$ref": "#/components/schemas/CardShortDto"
+            }
+          }
+        }
+      },
+      "CardBlockingRequestFullDto": {
+        "type": "object",
+        "description": "Объект запроса пользователя на блокировку карты, включающий описание пользователя",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "id запроса на блокировку карты",
+            "example": 1
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto",
+            "description": "информация о пользователе"
+          },
+          "cardNumber": {
+            "type": "string",
+            "description": "номер карты",
+            "example": "**** **** **** 1234"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "дата и время создания запроса",
+            "example": "2025-09-29T12:00"
+          },
+          "solved": {
+            "type": "boolean",
+            "description": "статус решения запроса",
+            "example": false
+          }
+        }
+      }
+    },
+    "examples": {
+      "ValidationErrorExample": {
+        "description": "Пример ошибки валидации",
+        "value": "{\n  \"error\": \"userId должно быть больше 0.\"\n}\n"
+      }
+    }
+  }
+}
