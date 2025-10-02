@@ -1,13 +1,3 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
-
-#Что нужно сделать:
-#  - Указать настройки подключения к базе данных.
-#  - Указать порт приложения.
-#  - Настроить параметры безопасности и JWT.
-#  - Включить Swagger UI.
-
-
 server.port: 8080
 
 spring:
@@ -19,7 +9,7 @@ spring:
 
   jpa:
     hibernate.ddl-auto: none
-    show-sql: true # переключить на  false
+    show-sql: false
     properties:
       hibernate.format_sql: true
       default_schema: public
@@ -32,8 +22,7 @@ logging.level:
     transaction: INFO
     transaction.interceptor: INFO
     orm.jpa.JpaTransactionManager: INFO
-  org.zalando.logbook: TRACE
-  com.example.bankcards: TRACE
+  com.example.bankcards: INFO
 
 springdoc:
   override-with-generic-response: false # отключает автоматическую генерацию ответов из RestControllerAdvice

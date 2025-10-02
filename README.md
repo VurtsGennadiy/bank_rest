@@ -1,105 +1,76 @@
-<h1>🚀 Разработка Системы Управления Банковскими Картами</h1>
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Maven](https://img.shields.io/badge/Apache_Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Liquibase](https://img.shields.io/badge/Liquibase-2962FF?style=for-the-badge&logo=liquibase&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=white)
+![JUnit](https://img.shields.io/badge/JUnit-25A162?style=for-the-badge&logo=junit5&logoColor=white)
+![Mockito](https://img.shields.io/badge/Mockito-2E8B57?style=for-the-badge&logo=mockito&logoColor=white)
 
-<h2>📁 Стартовая структура</h2>
-  <p>
-    Проектная структура с директориями и описательными файлами (<code>README Controller.md</code>, <code>README Service.md</code> и т.д.) уже подготовлена.<br />
-    Все реализации нужно добавлять <strong>в соответствующие директории</strong>.
-  </p>
-  <p>
-    После завершения разработки <strong>временные README-файлы нужно удалить</strong>, чтобы они не попадали в итоговую сборку.
-  </p>
-  
-<h2>📝 Описание задачи</h2>
-  <p>Разработать backend-приложение на Java (Spring Boot) для управления банковскими картами:</p>
-  <ul>
-    <li>Создание и управление картами</li>
-    <li>Просмотр карт</li>
-    <li>Переводы между своими картами</li>
-  </ul>
+# Система управления банковскими картами
 
-<h2>💳 Атрибуты карты</h2>
-  <ul>
-    <li>Номер карты (зашифрован, отображается маской: <code>**** **** **** 1234</code>)</li>
-    <li>Владелец</li>
-    <li>Срок действия</li>
-    <li>Статус: Активна, Заблокирована, Истек срок</li>
-    <li>Баланс</li>
-  </ul>
+backend-приложение на Java (Spring Boot) для управления банковскими картами:
 
-<h2>🧾 Требования</h2>
+- Создание и управление картами
+- Просмотр карт
+- Переводы между своими картами
 
-<h3>✅ Аутентификация и авторизация</h3>
-  <ul>
-    <li>Spring Security + JWT</li>
-    <li>Роли: <code>ADMIN</code> и <code>USER</code></li>
-  </ul>
+## Запуск
 
-<h3>✅ Возможности</h3>
-<strong>Администратор:</strong>
-  <ul>
-    <li>Создаёт, блокирует, активирует, удаляет карты</li>
-    <li>Управляет пользователями</li>
-    <li>Видит все карты</li>
-  </ul>
+1) Собираем исходники в jar архив: `mvn clean package -DskipTests`
+2) Поднимаем БД Postgres в контейнере докер: `docker compose up -d`
+3) Запускаем jar архив: `java -jar target/bank-rest-0.0.1-SNAPSHOT.jar`
 
-<strong>Пользователь:</strong>
-  <ul>
-    <li>Просматривает свои карты (поиск + пагинация)</li>
-    <li>Запрашивает блокировку карты</li>
-    <li>Делает переводы между своими картами</li>
-    <li>Смотрит баланс</li>
-  </ul>
+Приложение запустится на порту 8080 и будет доступно по адресу http://localhost:8080
 
-<h3>✅ API</h3>
-  <ul>
-    <li>CRUD для карт</li>
-    <li>Переводы между своими картами</li>
-    <li>Фильтрация и постраничная выдача</li>
-    <li>Валидация и сообщения об ошибках</li>
-  </ul>
+После запуска приложения будет доступен Swagger UI по адресу http://localhost:8080/swagger-ui.html
 
-<h3>✅ Безопасность</h3>
-  <ul>
-    <li>Шифрование данных</li>
-    <li>Ролевой доступ</li>
-    <li>Маскирование номеров карт</li>
-  </ul>
+OpenAPI документация доступна по адресу http://localhost:8080/api-docs и также локально в файле [./docs/openapi.yaml](./docs/openapi.yaml)
 
-<h3>✅ Работа с БД</h3>
-  <ul>
-    <li>PostgreSQL или MySQL</li>
-    <li>Миграции через Liquibase (<code>src/main/resources/db/migration</code>)</li>
-  </ul>
+## 💳 Атрибуты карты
 
-<h3>✅ Документация</h3>
-  <ul>
-    <li>Swagger UI / OpenAPI — <code>docs/openapi.yaml</code></li>
-    <li><code>README.md</code> с инструкцией запуска</li>
-  </ul>
+- Номер карты (зашифрован, отображается маской: `**** **** **** 1234`)
+- Владелец
+- Срок действия
+- Статус: Активна, Заблокирована, Истек срок
+- Баланс
 
-<h3>✅ Развёртывание и тестирование</h3>
-  <ul>
-    <li>Docker Compose для dev-среды</li>
-    <li>Liquibase миграции</li>
-    <li>Юнит-тесты ключевой бизнес-логики</li>
-  </ul>
+### ✅ Аутентификация и авторизация - _в разработке_
 
-<h2>📊 Оценка</h2>
-  <ul>
-    <li>Соответствие требованиям</li>
-    <li>Чистота архитектуры и кода</li>
-    <li>Безопасность</li>
-    <li>Обработка ошибок</li>
-    <li>Покрытие тестами</li>
-    <li>ООП и уровни абстракции</li>
-  </ul>
+- Spring Security + JWT
+- Роли: **ADMIN** и **USER**
 
-<h2>💡 Технологии</h2>
-  <p>
-    Java 17+, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL/MySQL, Liquibase, Docker, JWT, Swagger (OpenAPI)
-  </p>
+### ✅ Возможности
 
-<h2> 📤 Формат сдачи</h2>
-<p>
-Весь код и изменения принимаются только через git-репозиторий с открытым доступом к проекту. Отправка файлов в любом виде не принимается.
-  </p>
+**Администратор:**
+- Создаёт, блокирует, активирует, удаляет карты
+- Управляет пользователями
+- Видит все карты
+
+**Пользователь:**
+- Просматривает свои карты (поиск + пагинация)
+- Запрашивает блокировку карты
+- Делает переводы между своими картами
+- Смотрит баланс
+
+### ✅ API
+
+- CRUD для карт
+- Переводы между своими картами
+- Фильтрация и постраничная выдача
+- Валидация и сообщения об ошибках
+
+### ✅ Безопасность
+
+- Шифрование данных - _в разработке_
+- Ролевой доступ - _в разработке_
+- Маскирование номеров карт
+
+### ✅ Работа с БД
+
+- PostgreSQL - поднимается в докер контейнере, доступен на порту 5433. Volume для хранения данных - [./db-data](./db-data). [Схема данных](./docs/ER-diagram.png) 
+- Миграции через Liquibase (`src/main/resources/db/migration`) - _в разработке_

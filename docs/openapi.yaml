@@ -29,7 +29,7 @@
     }
   ],
   "paths": {
-    "/admin/card/block": {
+    "/admin/cards/block": {
       "put": {
         "tags": [
           "Админ: Карты"
@@ -126,7 +126,7 @@
         }
       }
     },
-    "/admin/card/activate": {
+    "/admin/cards/activate": {
       "put": {
         "tags": [
           "Админ: Карты"
@@ -177,7 +177,7 @@
         }
       }
     },
-    "/user/card/transfer": {
+    "/user/cards/transfer": {
       "post": {
         "tags": [
           "User: карты"
@@ -203,14 +203,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MoneyTransferRequest"
+                "$ref": "#/components/schemas/MoneyTransferRequest",
+                "example": {
+                  "fromCardNumber": "1234",
+                  "toCardNumber": "5678",
+                  "amount": 100
+                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Перевод выполнен",
             "content": {
               "application/json": {
@@ -273,7 +278,7 @@
         }
       }
     },
-    "/user/card/block": {
+    "/user/cards/block": {
       "post": {
         "tags": [
           "User: карты"
@@ -312,7 +317,7 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Запрос на блокировку карты создан",
             "content": {
               "application/json": {
@@ -351,7 +356,7 @@
         }
       }
     },
-    "/user/card/balance": {
+    "/user/cards/balance": {
       "post": {
         "tags": [
           "User: карты"
@@ -530,7 +535,7 @@
         }
       }
     },
-    "/admin/card": {
+    "/admin/cards": {
       "get": {
         "tags": [
           "Админ: Карты"
@@ -765,7 +770,7 @@
         }
       }
     },
-    "/admin/card/get": {
+    "/admin/cards/get": {
       "post": {
         "tags": [
           "Админ: Карты"
@@ -817,7 +822,7 @@
         }
       }
     },
-    "/user/card": {
+    "/user/cards": {
       "get": {
         "tags": [
           "User: карты"
@@ -1001,7 +1006,7 @@
         }
       }
     },
-    "/admin/card/blocking-request": {
+    "/admin/cards/blocking-request": {
       "get": {
         "tags": [
           "Админ: Карты"
@@ -1467,12 +1472,6 @@
             "example": false
           }
         }
-      }
-    },
-    "examples": {
-      "ValidationErrorExample": {
-        "description": "Пример ошибки валидации",
-        "value": "{\n  \"error\": \"userId должно быть больше 0.\"\n}\n"
       }
     }
   }
