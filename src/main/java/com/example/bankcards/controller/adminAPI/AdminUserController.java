@@ -5,7 +5,7 @@ import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.dto.UserFullDto;
 import com.example.bankcards.dto.filters.UserSearchParam;
 import com.example.bankcards.exception.ErrorResponse;
-import com.example.bankcards.service.UserServiceImpl;
+import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,7 +32,7 @@ import java.util.List;
         description = "API для управления пользователями"
 )
 public class AdminUserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Operation(summary = "Создание нового пользователя", responses = {
             @ApiResponse(responseCode = "201", description = "Пользователь создан",

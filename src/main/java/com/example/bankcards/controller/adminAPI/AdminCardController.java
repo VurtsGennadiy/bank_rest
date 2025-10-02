@@ -30,7 +30,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/card")
+@RequestMapping("/admin/cards")
 @RequiredArgsConstructor
 @Validated
 @Tag(

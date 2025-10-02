@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user/card")
+@RequestMapping("/user/cards")
 @RequiredArgsConstructor
 @Validated
 @Tag(
@@ -85,7 +86,7 @@ public class UserCardController {
                     content = @Content(mediaType = "text/plain",
                             schema = @Schema(implementation = String.class, example = "1234"))),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Запрос на блокировку карты создан"),
+                    @ApiResponse(responseCode = "201", description = "Запрос на блокировку карты создан"),
                     @ApiResponse(responseCode = "404", description = "Карта не найдена",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class,
                                     example = """
@@ -96,6 +97,7 @@ public class UserCardController {
                                             {"error": "Запрос на блокировку для этой карты уже существует"}""")))
             })
     @PostMapping("/block")
+    @ResponseStatus(HttpStatus.CREATED)
     public CardBlockingRequestDto createBlockingCardRequest(@RequestBody String partCardNumber,
                                                             @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
         return userCardService.createCardBlockingRequest(userId, partCardNumber.trim());
@@ -124,9 +126,15 @@ public class UserCardController {
                     description = "Параметры перевода. Используются частичные номера карт. " +
                             "Обе карты должны иметь статус ACTIVE. Сумма перевода должна быть положительная",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MoneyTransferRequest.class))),
+                            schema = @Schema(implementation = MoneyTransferRequest.class,
+                                    example = """
+                                            {
+                                              "fromCardNumber": "1234",
+                                              "toCardNumber": "5678",
+                                              "amount": 100
+                                            }"""))),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Перевод выполнен"),
+                    @ApiResponse(responseCode = "201", description = "Перевод выполнен"),
                     @ApiResponse(responseCode = "400", description = "Некорректный запрос",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class,
                                     example = """
@@ -145,6 +153,7 @@ public class UserCardController {
 
             })
     @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.CREATED)
     public CardBalanceDto transferMoney(@RequestBody @Valid MoneyTransferRequest transferParam,
                                         @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
         transferParam.setUserId(userId);

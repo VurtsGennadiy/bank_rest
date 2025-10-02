@@ -2,8 +2,7 @@ package com.example.bankcards.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
@@ -14,6 +13,9 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Schema(description = "Параметры перевода средств между счетами")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class MoneyTransferRequest {
     @Schema(description = "id пользователя", example = "1")
     Long userId;
