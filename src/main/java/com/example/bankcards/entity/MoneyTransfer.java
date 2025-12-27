@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name = "money_transfer")
+@Table(name = "money_transfers")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter

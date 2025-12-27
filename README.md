@@ -73,4 +73,4 @@ OpenAPI документация доступна по адресу http://local
 ### ✅ Работа с БД
 
 - PostgreSQL - поднимается в докер контейнере, доступен на порту 5433. Volume для хранения данных - [./db-data](./db-data). [Схема данных](./docs/ER-diagram.png) 
-- Миграции через Liquibase (`src/main/resources/db/migration`) - _в разработке_
+- Миграции через Liquibase (`src/main/resources/db/migration`)

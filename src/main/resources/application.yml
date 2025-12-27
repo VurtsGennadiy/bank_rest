@@ -3,9 +3,12 @@ server.port: 8080
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/bank_cards
-    username: dbuser
-    password: 12345
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:bank_cards}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+
+  liquibase:
+    change-log: classpath:db/migration/db.changelog-master.yaml
 
   jpa:
     hibernate.ddl-auto: none

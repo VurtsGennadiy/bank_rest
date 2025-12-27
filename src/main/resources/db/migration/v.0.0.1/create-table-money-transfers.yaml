@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-money-transfers
+      author: VurtsGD
+      changes:
+        - createTable:
+            tableName: money_transfers
+            remarks: Денежные переводы
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: from_card_number
+                  type: varchar(16)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: to_card_number
+                  type: varchar(16)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: decimal
+
+        - addForeignKeyConstraint:
+            baseTableName: money_transfers
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_money_transfers_user
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: money_transfers
+            baseColumnNames: from_card_number
+            referencedTableName: cards
+            referencedColumnNames: number
+            constraintName: fk_money_transfers_from_card
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: money_transfers
+            baseColumnNames: to_card_number
+            referencedTableName: cards
+            referencedColumnNames: number
+            constraintName: fk_money_transfers_to_card
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+
+  - changeSet:
+      id: add-check-money-transfers-amount-positive
+      author: VurtsGD
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE money_transfers 
+              ADD CONSTRAINT chk_amount_positive CHECK (amount > 0);
+
+

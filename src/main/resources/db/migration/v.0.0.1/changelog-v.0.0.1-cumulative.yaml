@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: create-table-users.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-table-cards.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-table-blocking-card-requests.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-table-money-transfers.yaml
+      relativeToChangelogFile: true

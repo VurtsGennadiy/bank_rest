@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-blocking-card-requests
+      author: VurtsGD
+      changes:
+        - createTable:
+            tableName: card_blocking_requests
+            remarks: Запросы пользователей на блокировку карты
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_number
+                  type: varchar(16)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: solved
+                  type: boolean
+                  defaultValue: false
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: card_blocking_requests
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_blocking_requests_user
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: card_blocking_requests
+            baseColumnNames: card_number
+            referencedTableName: cards
+            referencedColumnNames: number
+            constraintName: fk_blocking_requests_card
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+

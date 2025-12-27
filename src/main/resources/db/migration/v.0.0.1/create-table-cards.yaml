@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-cards
+      author: VurtsGD
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: number
+                  type: varchar(16)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expiration
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(30)
+
+              - column:
+                  name: balance
+                  type: decimal
+                  defaultValue: 0.0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_cards_user
+            onDelete: RESTRICT
+            onUpdate: CASCADE
