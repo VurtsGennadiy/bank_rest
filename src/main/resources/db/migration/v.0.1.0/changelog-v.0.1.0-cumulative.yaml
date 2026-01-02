@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - include:
+      file: users-rename-name-to-username.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: users-insert-admin-account.yaml
+      relativeToChangelogFile: true

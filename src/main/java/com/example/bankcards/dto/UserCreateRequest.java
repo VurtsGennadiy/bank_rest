@@ -22,7 +22,7 @@ public class UserCreateRequest {
     @NotBlank
     @Size(min = 2, max = 255)
     @Schema(description = "имя пользователя", example = "Иван Иванов", minLength = 2, maxLength = 255)
-    String name;
+    String username;
 
     @NotBlank
     @Email
@@ -36,5 +36,6 @@ public class UserCreateRequest {
     @NotNull
     @Size(min = 8, max = 255)
     @Schema(description = "пароль пользователя", example = "qwerty123", minLength = 8, maxLength = 255)
+    @ToString.Exclude
     String password;
 }

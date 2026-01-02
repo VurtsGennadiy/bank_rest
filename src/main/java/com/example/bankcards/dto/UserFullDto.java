@@ -18,7 +18,7 @@ public class UserFullDto {
     Long id;
 
     @Schema(description = "имя пользователя", example = "Иван Иванов")
-    String name;
+    String username;
 
     @Schema(description = "email пользователя", example = "ivan@mail.ru")
     String email;

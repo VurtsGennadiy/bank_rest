@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-admin-account
+      author: VurtsGD
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+
+              - column:
+                  name: email
+                  value: admin@effective.ru
+
+              - column:
+                  name: password
+                  value: $2a$10$Gq9EqBG.B/b0TUHmFcOm4eyTo6BfyP5Nye41MpgvKiM6QNhU6UegS
+
+              - column:
+                  name: role
+                  value: ADMIN

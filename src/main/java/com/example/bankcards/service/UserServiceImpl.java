@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +28,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public UserDto createUser(UserCreateRequest userRequest) {
         log.debug("Request to create new user: {}", userRequest);
         User user = userMapper.toEntity(userRequest);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepository.save(user);
-        log.info("Created new user id: '{}', name: '{}', email: '{}', role: '{}'",
-                user.getId(), user.getName(), user.getEmail(), user.getRole());
+        log.info("Created new user: {}", user);
         return userMapper.toDto(user);
     }
 

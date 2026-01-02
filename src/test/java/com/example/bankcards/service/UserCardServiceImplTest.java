@@ -3,7 +3,6 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.CardBalanceDto;
 import com.example.bankcards.dto.CardBlockingRequestDto;
 import com.example.bankcards.dto.MoneyTransferRequest;
-import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.*;
 import com.example.bankcards.exception.MoneyTransferException;
 import com.example.bankcards.repository.CardBlockingRequestRepository;
@@ -55,7 +54,7 @@ class UserCardServiceImplTest {
     @BeforeEach()
     void setTestData() {
         user = new User();
-        user.setName("username");
+        user.setUsername("username");
         user.setEmail("username@mail.ru");
         user.setRole(UserRole.USER);
         user.setId(userId);

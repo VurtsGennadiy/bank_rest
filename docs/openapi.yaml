@@ -419,7 +419,7 @@
         "operationId": "getUsers",
         "parameters": [
           {
-            "name": "name",
+            "name": "username",
             "in": "query",
             "description": "Имя пользователя, поддерживается поиск по части имени",
             "required": false,

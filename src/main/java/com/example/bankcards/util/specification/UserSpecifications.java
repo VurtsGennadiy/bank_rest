@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecifications {
     public static Specification<User> userSearchSpec(UserSearchParam param) {
-        return nameLike(param.getName()).and(emailLike(param.getEmail()));
+        return nameLike(param.getUsername()).and(emailLike(param.getEmail()));
     }
 
     public static Specification<User> nameLike(String name) {

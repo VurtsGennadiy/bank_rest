@@ -49,13 +49,13 @@ class AdminCardServiceImplTest {
     @BeforeEach
     void setTestData() {
         user = new User();
-        user.setName("username");
+        user.setUsername("username");
         user.setEmail("username@mail.ru");
         user.setRole(UserRole.USER);
         user.setId(1L);
         user.setPassword("password123");
 
-        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getRole());
+        UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
 
         card = new Card();
         card.setNumber(cardNumber);

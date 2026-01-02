@@ -5,8 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,8 +18,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "name", nullable = false)
-    String name;
+    @Column(name = "username", nullable = false, unique = true)
+    String username;
 
     @Column(name = "email", nullable = false, unique = true)
     String email;
@@ -29,9 +28,7 @@ public class User {
     @Column(name = "role", nullable = false)
     UserRole role;
 
-    /*
-    TODO шифрование пароля
-     */
+    @ToString.Exclude
     @Column(name = "password", nullable = false)
     String password;
 }

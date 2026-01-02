@@ -46,13 +46,13 @@ class UserServiceImplTest {
     @BeforeEach
     void setTestData() {
         user = new User();
-        user.setName("username");
+        user.setUsername("username");
         user.setEmail("username@mail.ru");
         user.setRole(UserRole.USER);
         user.setId(userId);
         user.setPassword("password123");
 
-        userDto = new UserDto(userId, user.getName(), user.getEmail(), user.getRole());
+        userDto = new UserDto(userId, user.getUsername(), user.getEmail(), user.getRole());
     }
 
     @Test
@@ -81,7 +81,7 @@ class UserServiceImplTest {
 
         UserFullDto expected = UserFullDto.builder()
                 .id(userId)
-                .name(user.getName())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .cards(List.of(CardShortDto.builder()

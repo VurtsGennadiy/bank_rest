@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: users-rename-name-to-username
+      author: VurtsGD
+      changes:
+        - renameColumn:
+            tableName: users
+            oldColumnName: name
+            newColumnName: username
+
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: username
+            constraintName: uq_users_username
