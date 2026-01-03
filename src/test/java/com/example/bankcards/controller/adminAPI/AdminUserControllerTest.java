@@ -41,7 +41,7 @@ class AdminUserControllerTest {
     @SneakyThrows
     void createUser() {
         UserCreateRequest userRequest = UserCreateRequest.builder()
-                .name("Ivan Ivanov")
+                .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
                 .role(UserRole.USER)
                 .password("qwerty123")
@@ -49,7 +49,7 @@ class AdminUserControllerTest {
 
         UserDto userDto = UserDto.builder()
                 .id(1L)
-                .name("Ivan Ivanov")
+                .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
                 .role(UserRole.USER)
                 .build();
@@ -73,7 +73,7 @@ class AdminUserControllerTest {
     @SneakyThrows
     void createUser_whenUserNotValid_thenReturnBadRequest() {
         UserCreateRequest userRequest = UserCreateRequest.builder()
-                .name("Ivan Ivanov")
+                .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
                 .role(UserRole.USER)
                 .password("")
@@ -81,7 +81,7 @@ class AdminUserControllerTest {
 
         UserDto userDto = UserDto.builder()
                 .id(1L)
-                .name("Ivan Ivanov")
+                .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
                 .role(UserRole.USER)
                 .build();

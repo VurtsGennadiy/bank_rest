@@ -52,7 +52,7 @@ public class AdminUserController {
 
     @Operation(summary = "Поиск пользователей", description = "Поддерживается фильтрация и пагинация",
             parameters = {
-                    @Parameter(name = "name", description = "Имя пользователя, поддерживается поиск по части имени", example = "Иван"),
+                    @Parameter(name = "username", description = "Имя пользователя, поддерживается поиск по части имени", example = "Иван"),
                     @Parameter(name = "email", description = "Email пользователя, поддерживается поиск по части email", example = "@mail"),
                     @Parameter(name = "from", description = "Индекс первого элемента, с которого нужно вернуть"),
                     @Parameter(name = "size", description = "Количество возвращаемых элементов")
@@ -68,13 +68,13 @@ public class AdminUserController {
                                     )))
             })
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam(required = false) String name,
+    public List<UserDto> getUsers(@RequestParam(required = false) String username,
                                   @RequestParam(required = false) String email,
                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
         return userService.getUsers(
                 UserSearchParam.builder()
-                        .name(name)
+                        .username(username)
                         .email(email)
                         .from(from)
                         .size(size)

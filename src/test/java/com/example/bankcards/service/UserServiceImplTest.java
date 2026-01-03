@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,6 +37,9 @@ class UserServiceImplTest {
     private UserMapper userMapper;
     @Mock
     private CardRepository cardRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -65,6 +69,8 @@ class UserServiceImplTest {
         when(userRepository.save(user)).thenReturn(user);
 
         UserDto actual = userService.createUser(request);
+
+        verify(passwordEncoder).encode(request.getPassword());
         verify(userRepository).save(user);
         assertEquals(userDto, actual);
     }

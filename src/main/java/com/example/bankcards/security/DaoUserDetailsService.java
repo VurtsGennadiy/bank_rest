@@ -16,10 +16,6 @@ public class DaoUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(username)
-                .password(user.getPassword())
-                .roles(user.getRole().name())
-                .build();
+        return new SecurityUser(user);
     }
 }

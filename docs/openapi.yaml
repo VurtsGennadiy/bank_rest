@@ -184,20 +184,6 @@
         ],
         "summary": "Перевести деньги между картами",
         "operationId": "transferMoney",
-        "parameters": [
-          {
-            "name": "X-User-Id",
-            "in": "header",
-            "description": "Id пользователя",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "exclusiveMinimum": 0
-            },
-            "example": 1
-          }
-        ],
         "requestBody": {
           "description": "Параметры перевода. Используются частичные номера карт. Обе карты должны иметь статус ACTIVE. Сумма перевода должна быть положительная",
           "content": {
@@ -285,20 +271,6 @@
         ],
         "summary": "Создать запрос на блокировку карты",
         "operationId": "createBlockingCardRequest",
-        "parameters": [
-          {
-            "name": "X-User-Id",
-            "in": "header",
-            "description": "Id пользователя",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "exclusiveMinimum": 0
-            },
-            "example": 1
-          }
-        ],
         "requestBody": {
           "description": "Частичный номер карты (например последние 4 цифры)",
           "content": {
@@ -364,20 +336,6 @@
         "summary": "Получить баланс карты",
         "description": "Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса",
         "operationId": "getCardBalance",
-        "parameters": [
-          {
-            "name": "X-User-Id",
-            "in": "header",
-            "description": "Id пользователя",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "exclusiveMinimum": 0
-            },
-            "example": 1
-          }
-        ],
         "requestBody": {
           "description": "Частичный номер карты (например последние 4 цифры)",
           "content": {
@@ -901,18 +859,6 @@
               "default": 20,
               "exclusiveMinimum": 0
             }
-          },
-          {
-            "name": "X-User-Id",
-            "in": "header",
-            "description": "Id пользователя",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "exclusiveMinimum": 0
-            },
-            "example": 1
           }
         ],
         "responses": {
@@ -1237,7 +1183,7 @@
             "description": "id пользователя",
             "example": 1
           },
-          "name": {
+          "username": {
             "type": "string",
             "description": "имя пользователя",
             "example": "Иван Иванов"
@@ -1262,7 +1208,7 @@
         "type": "object",
         "description": "Данные для создания нового пользователя",
         "properties": {
-          "name": {
+          "username": {
             "type": "string",
             "description": "имя пользователя",
             "example": "Иван Иванов",
@@ -1295,9 +1241,9 @@
         },
         "required": [
           "email",
-          "name",
           "password",
-          "role"
+          "role",
+          "username"
         ]
       },
       "CardCreateRequest": {
@@ -1413,7 +1359,7 @@
             "description": "id пользователя",
             "example": 1
           },
-          "name": {
+          "username": {
             "type": "string",
             "description": "имя пользователя",
             "example": "Иван Иванов"

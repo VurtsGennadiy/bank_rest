@@ -151,7 +151,7 @@ class AdminCardControllerTest {
                 .number("**** **** **** 1234")
                 .owner(UserDto.builder()
                         .id(1L)
-                        .name("John Doe")
+                        .username("John Doe")
                         .email("john@example.com")
                         .role(UserRole.USER)
                         .build())

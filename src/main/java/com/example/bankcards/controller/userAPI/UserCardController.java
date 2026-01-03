@@ -7,10 +7,10 @@ import com.example.bankcards.dto.MoneyTransferRequest;
 import com.example.bankcards.dto.filters.CardSearchParam;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.exception.ErrorResponse;
+import com.example.bankcards.security.SecurityUser;
 import com.example.bankcards.service.UserCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +22,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +40,6 @@ import java.util.List;
 public class UserCardController {
     private final UserCardService userCardService;
     private final String datePattern = "yyyy-MM-dd";
-    private static final String USER_ID_HEADER = "X-User-Id";
 
     @Operation(summary = "Поиск карт пользователя", description = "Поддерживается фильтрация и пагинация",
             parameters = {
@@ -48,8 +48,7 @@ public class UserCardController {
                     @Parameter(name = "created", description = "Дата создания карты", example = "2025-09-28"),
                     @Parameter(name = "expiration", description = "Дата окончания срока действия карты", example = "2026-09-28"),
                     @Parameter(name = "from", description = "Индекс первого элемента, с которого нужно вернуть"),
-                    @Parameter(name = "size", description = "Количество возвращаемых элементов"),
-                    @Parameter(name = "X-User-Id", description = "Id пользователя", example = "1", in = ParameterIn.HEADER)},
+                    @Parameter(name = "size", description = "Количество возвращаемых элементов")},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Список найденных карт"),
                     @ApiResponse(responseCode = "400", description = "Некорректный запрос",
@@ -64,10 +63,11 @@ public class UserCardController {
                                        @RequestParam(required = false) @DateTimeFormat(pattern = datePattern) LocalDate expiration,
                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                        @RequestParam(defaultValue = "20") @Positive Integer size,
-                                       @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
+                                       @AuthenticationPrincipal SecurityUser user) {
+
         return userCardService.getCards(
                 CardSearchParam.builder()
-                        .userId(userId)
+                        .userId(user.getUserId())
                         .number(number)
                         .status(status)
                         .created(created)
@@ -79,8 +79,6 @@ public class UserCardController {
     }
 
     @Operation(summary = "Создать запрос на блокировку карты",
-            parameters = {
-                    @Parameter(name = "X-User-Id", description = "Id пользователя", example = "1", in = ParameterIn.HEADER)},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Частичный номер карты (например последние 4 цифры)",
                     content = @Content(mediaType = "text/plain",
@@ -99,15 +97,13 @@ public class UserCardController {
     @PostMapping("/block")
     @ResponseStatus(HttpStatus.CREATED)
     public CardBlockingRequestDto createBlockingCardRequest(@RequestBody String partCardNumber,
-                                                            @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
-        return userCardService.createCardBlockingRequest(userId, partCardNumber.trim());
+                                                            @AuthenticationPrincipal SecurityUser user) {
+        return userCardService.createCardBlockingRequest(user.getUserId(), partCardNumber.trim());
     }
 
     @Operation(summary = "Получить баланс карты",
             description = "Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную " +
                     "информацию в параметрах запроса",
-            parameters = {
-                    @Parameter(name = "X-User-Id", description = "Id пользователя", example = "1", in = ParameterIn.HEADER)},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Частичный номер карты (например последние 4 цифры)",
                     content = @Content(mediaType = "text/plain",
@@ -115,13 +111,11 @@ public class UserCardController {
     )
     @PostMapping("/balance")
     public CardBalanceDto getCardBalance(@RequestBody String partCardNumber,
-                                         @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
-        return userCardService.getBalance(userId, partCardNumber.trim());
+                                         @AuthenticationPrincipal SecurityUser user) {
+        return userCardService.getBalance(user.getUserId(), partCardNumber.trim());
     }
 
     @Operation(summary = "Перевести деньги между картами",
-            parameters = {
-                    @Parameter(name = "X-User-Id", description = "Id пользователя", example = "1", in = ParameterIn.HEADER)},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Параметры перевода. Используются частичные номера карт. " +
                             "Обе карты должны иметь статус ACTIVE. Сумма перевода должна быть положительная",
@@ -155,8 +149,8 @@ public class UserCardController {
     @PostMapping("/transfer")
     @ResponseStatus(HttpStatus.CREATED)
     public CardBalanceDto transferMoney(@RequestBody @Valid MoneyTransferRequest transferParam,
-                                        @RequestHeader(USER_ID_HEADER) @Positive Long userId) {
-        transferParam.setUserId(userId);
+                                        @AuthenticationPrincipal SecurityUser user) {
+        transferParam.setUserId(user.getUserId());
         return userCardService.cardToCardTransfer(transferParam);
     }
 }

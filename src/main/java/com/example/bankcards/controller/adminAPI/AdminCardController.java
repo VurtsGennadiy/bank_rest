@@ -106,6 +106,7 @@ public class AdminCardController {
                                   @RequestParam(required = false) @DateTimeFormat(pattern = datePattern) LocalDate expiration,
                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
+
         return adminCardService.getCards(
                 CardSearchParam.builder()
                         .number(number)
