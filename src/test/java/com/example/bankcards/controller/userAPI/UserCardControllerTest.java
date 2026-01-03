@@ -1,5 +1,6 @@
 package com.example.bankcards.controller.userAPI;
 
+import com.example.bankcards.config.SecurityTestConfig;
 import com.example.bankcards.dto.CardBalanceDto;
 import com.example.bankcards.dto.CardBlockingRequestDto;
 import com.example.bankcards.dto.CardShortDto;
@@ -14,6 +15,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,9 +28,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Import(SecurityTestConfig.class)
 @WebMvcTest(UserCardController.class)
 class UserCardControllerTest {
 
@@ -41,12 +45,19 @@ class UserCardControllerTest {
     @MockitoBean
     private UserCardService userCardService;
 
-    private static final String USER_ID_HEADER = "X-User-Id";
-    private static final Long TEST_USER_ID = 1L;
+    private static final Long TEST_USER_ID = 2L;
 
     @Test
     @SneakyThrows
     void getCards_ValidRequest_ReturnsCardShortDtoList() {
+        CardSearchParam cardSearchParam = CardSearchParam.builder()
+                .userId(TEST_USER_ID)
+                .number("1234")
+                .status(CardStatus.ACTIVE)
+                .from(0)
+                .size(20)
+                .build();
+
         List<CardShortDto> expectedCards = List.of(
                 CardShortDto.builder()
                         .number("**** **** **** 1234")
@@ -58,18 +69,17 @@ class UserCardControllerTest {
         when(userCardService.getCards(any(CardSearchParam.class))).thenReturn(expectedCards);
 
         String response = mockMvc.perform(get("/user/cards")
-                        .header(USER_ID_HEADER, TEST_USER_ID)
                         .param("number", "1234")
                         .param("status", "ACTIVE")
-                        .param("from", "0")
-                        .param("size", "20"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                        .with(httpBasic("ivan", "ivan_password")))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        verify(userCardService, times(1)).getCards(any(CardSearchParam.class));
+        verify(userCardService, times(1)).getCards(cardSearchParam);
         assertEquals(objectMapper.writeValueAsString(expectedCards), response);
     }
 
@@ -87,9 +97,9 @@ class UserCardControllerTest {
         when(userCardService.createCardBlockingRequest(TEST_USER_ID, partCardNumber)).thenReturn(expectedDto);
 
         String response = mockMvc.perform(post("/user/cards/block")
-                        .header(USER_ID_HEADER, TEST_USER_ID)
                         .content(partCardNumber)
-                        .contentType(MediaType.TEXT_PLAIN))
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .with(httpBasic("ivan", "ivan_password")))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -113,9 +123,9 @@ class UserCardControllerTest {
                 .thenReturn(expectedDto);
 
         String response = mockMvc.perform(post("/user/cards/balance")
-                        .header(USER_ID_HEADER, TEST_USER_ID)
                         .content(partCardNumber)
-                        .contentType(MediaType.TEXT_PLAIN))
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .with(httpBasic("ivan", "ivan_password")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -143,9 +153,9 @@ class UserCardControllerTest {
         when(userCardService.cardToCardTransfer(any())).thenReturn(expectedDto);
 
         String response = mockMvc.perform(post("/user/cards/transfer")
-                        .header(USER_ID_HEADER, TEST_USER_ID)
                         .content(objectMapper.writeValueAsString(transferRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("ivan", "ivan_password")))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -170,9 +180,9 @@ class UserCardControllerTest {
         when(userCardService.cardToCardTransfer(any())).thenThrow(new MoneyTransferException(errorMessage));
 
         String response = mockMvc.perform(post("/user/cards/transfer")
-                        .header(USER_ID_HEADER, TEST_USER_ID)
                         .content(objectMapper.writeValueAsString(transferRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("ivan", "ivan_password")))
                 .andExpect(status().isNotAcceptable())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
