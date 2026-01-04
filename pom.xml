@@ -12,7 +12,7 @@
 
     <groupId>ru.effective.mobile</groupId>
     <artifactId>bank-rest</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>bank-rest</name>
     <description>bank-rest</description>
 
