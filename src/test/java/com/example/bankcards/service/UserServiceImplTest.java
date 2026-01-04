@@ -52,7 +52,7 @@ class UserServiceImplTest {
         user = new User();
         user.setUsername("username");
         user.setEmail("username@mail.ru");
-        user.setRole(UserRole.USER);
+        user.setRole(UserRole.ROLE_USER);
         user.setId(userId);
         user.setPassword("password123");
 
@@ -62,7 +62,7 @@ class UserServiceImplTest {
     @Test
     void createUser_whenValidUser_thenUserCreated() {
         UserCreateRequest request = new UserCreateRequest(
-                "username", "username@mail.ru", UserRole.USER, "password123");
+                "username", "username@mail.ru", UserRole.ROLE_USER, "password123");
 
         when(userMapper.toEntity(request)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(userDto);

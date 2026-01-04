@@ -28,7 +28,7 @@ public class SecurityTestConfig {
                 .id(1L)
                 .username("admin")
                 .email("admin@effective.ru")
-                .role(UserRole.ADMIN)
+                .role(UserRole.ROLE_ADMIN)
                 .password(passwordEncoder.encode("admin_password"))
                 .build();
 
@@ -36,7 +36,7 @@ public class SecurityTestConfig {
                 .id(2L)
                 .username("ivan")
                 .email("ivan@mail.ru")
-                .role(UserRole.USER)
+                .role(UserRole.ROLE_USER)
                 .password(passwordEncoder.encode("ivan_password"))
                 .build();
 

@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: users-add-prefix-ROLE
+      author: VurtsGD
+      changes:
+        - update:
+            tableName: users
+            where: "role='ADMIN'"
+            columns:
+              - column:
+                  name: role
+                  value: ROLE_ADMIN
+
+        - update:
+            tableName: users
+            where: "role='USER'"
+            columns:
+              - column:
+                  name: role
+                  value: ROLE_USER

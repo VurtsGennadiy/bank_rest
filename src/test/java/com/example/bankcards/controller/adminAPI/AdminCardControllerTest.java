@@ -170,7 +170,7 @@ class AdminCardControllerTest {
                         .id(2L)
                         .username("John Doe")
                         .email("john@example.com")
-                        .role(UserRole.USER)
+                        .role(UserRole.ROLE_USER)
                         .build())
                 .created(LocalDateTime.now())
                 .expiration(LocalDate.now().plusYears(1))

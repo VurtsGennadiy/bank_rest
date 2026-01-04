@@ -56,7 +56,7 @@ class UserCardServiceImplTest {
         user = new User();
         user.setUsername("username");
         user.setEmail("username@mail.ru");
-        user.setRole(UserRole.USER);
+        user.setRole(UserRole.ROLE_USER);
         user.setId(userId);
         user.setPassword("password123");
 

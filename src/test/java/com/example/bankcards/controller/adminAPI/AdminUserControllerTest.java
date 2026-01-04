@@ -49,7 +49,7 @@ class AdminUserControllerTest {
         UserCreateRequest userRequest = UserCreateRequest.builder()
                 .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
-                .role(UserRole.USER)
+                .role(UserRole.ROLE_USER)
                 .password("qwerty123")
                 .build();
 
@@ -57,7 +57,7 @@ class AdminUserControllerTest {
                 .id(1L)
                 .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
-                .role(UserRole.USER)
+                .role(UserRole.ROLE_USER)
                 .build();
 
         when(userService.createUser(userRequest)).thenReturn(userDto);
@@ -83,7 +83,7 @@ class AdminUserControllerTest {
         UserCreateRequest userRequest = UserCreateRequest.builder()
                 .username("Ivan Ivanov")
                 .email("ivan@mail.ru")
-                .role(UserRole.USER)
+                .role(UserRole.ROLE_USER)
                 .password("")
                 .build();
 
@@ -118,7 +118,7 @@ class AdminUserControllerTest {
         Long userId = 1L;
         UserFullDto userDto = UserFullDto.builder()
                 .id(userId)
-                .role(UserRole.USER)
+                .role(UserRole.ROLE_USER)
                 .email("ivan@mail.ru")
                 .username("Ivan Ivanov")
                 .build();

@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: users-add-prefix-ROLE.yaml
+      relativeToChangelogFile: true
