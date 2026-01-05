@@ -17,7 +17,7 @@ public class OpenApiConfig {
 
         Info info = new Info()
                 .title("API Системы для управления банковскими картами")
-                .version("1.0")
+                .version("2.0")
                 .contact(myContact);
 
         return new OpenAPI().info(info);

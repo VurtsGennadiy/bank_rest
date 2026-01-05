@@ -6,7 +6,7 @@
       "name": "Вурц Геннадий",
       "email": "vgd2001@gmail.com"
     },
-    "version": "1.0"
+    "version": "2.0"
   },
   "servers": [
     {
@@ -360,6 +360,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CardBalanceDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": [
+          "authorization-controller"
+        ],
+        "operationId": "authorization",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JwtRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
                 }
               }
             }
@@ -1173,6 +1203,25 @@
           }
         }
       },
+      "JwtRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "JwtResponse": {
+        "type": "object",
+        "properties": {
+          "jwt": {
+            "type": "string"
+          }
+        }
+      },
       "UserDto": {
         "type": "object",
         "description": "Информация о пользователе",
@@ -1197,8 +1246,8 @@
             "type": "string",
             "description": "роль пользователя",
             "enum": [
-              "ADMIN",
-              "USER"
+              "ROLE_ADMIN",
+              "ROLE_USER"
             ],
             "example": "USER"
           }
@@ -1226,8 +1275,8 @@
             "type": "string",
             "description": "роль пользователя",
             "enum": [
-              "ADMIN",
-              "USER"
+              "ROLE_ADMIN",
+              "ROLE_USER"
             ],
             "example": "USER"
           },
@@ -1373,8 +1422,8 @@
             "type": "string",
             "description": "роль пользователя",
             "enum": [
-              "ADMIN",
-              "USER"
+              "ROLE_ADMIN",
+              "ROLE_USER"
             ],
             "example": "USER"
           },

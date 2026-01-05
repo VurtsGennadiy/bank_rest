@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -77,6 +78,13 @@ public class ExceptionHandlerControllerAdvice {
     @ExceptionHandler(MoneyTransferException.class)
     public ErrorResponse handleMoneyTransferException(MoneyTransferException exception) {
         log.warn("Error process money transfer: {}",exception.getMessage());
+        return new ErrorResponse(exception.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
+    public ErrorResponse authenticationException(AuthenticationException exception) {
+        log.warn("Authentication error: {}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
 

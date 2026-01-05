@@ -7,7 +7,6 @@ import com.example.bankcards.dto.MoneyTransferRequest;
 import com.example.bankcards.dto.filters.CardSearchParam;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.exception.ErrorResponse;
-import com.example.bankcards.security.SecurityUser;
 import com.example.bankcards.service.UserCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -63,11 +63,10 @@ public class UserCardController {
                                        @RequestParam(required = false) @DateTimeFormat(pattern = datePattern) LocalDate expiration,
                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                        @RequestParam(defaultValue = "20") @Positive Integer size,
-                                       @AuthenticationPrincipal SecurityUser user) {
-
+                                       @AuthenticationPrincipal @NotNull Long userId) {
         return userCardService.getCards(
                 CardSearchParam.builder()
-                        .userId(user.getUserId())
+                        .userId(userId)
                         .number(number)
                         .status(status)
                         .created(created)
@@ -97,8 +96,8 @@ public class UserCardController {
     @PostMapping("/block")
     @ResponseStatus(HttpStatus.CREATED)
     public CardBlockingRequestDto createBlockingCardRequest(@RequestBody String partCardNumber,
-                                                            @AuthenticationPrincipal SecurityUser user) {
-        return userCardService.createCardBlockingRequest(user.getUserId(), partCardNumber.trim());
+                                                            @AuthenticationPrincipal @NotNull Long userId) {
+        return userCardService.createCardBlockingRequest(userId, partCardNumber.trim());
     }
 
     @Operation(summary = "Получить баланс карты",
@@ -111,8 +110,8 @@ public class UserCardController {
     )
     @PostMapping("/balance")
     public CardBalanceDto getCardBalance(@RequestBody String partCardNumber,
-                                         @AuthenticationPrincipal SecurityUser user) {
-        return userCardService.getBalance(user.getUserId(), partCardNumber.trim());
+                                         @AuthenticationPrincipal @NotNull Long userId) {
+        return userCardService.getBalance(userId, partCardNumber.trim());
     }
 
     @Operation(summary = "Перевести деньги между картами",
@@ -149,8 +148,8 @@ public class UserCardController {
     @PostMapping("/transfer")
     @ResponseStatus(HttpStatus.CREATED)
     public CardBalanceDto transferMoney(@RequestBody @Valid MoneyTransferRequest transferParam,
-                                        @AuthenticationPrincipal SecurityUser user) {
-        transferParam.setUserId(user.getUserId());
+                                        @AuthenticationPrincipal @NotNull Long userId) {
+        transferParam.setUserId(userId);
         return userCardService.cardToCardTransfer(transferParam);
     }
 }

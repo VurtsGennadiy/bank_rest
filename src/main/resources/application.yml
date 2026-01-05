@@ -1,6 +1,8 @@
 server.port: 8080
 
 spring:
+  application:
+    name: bank-rest
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:bank_cards}
@@ -19,13 +21,16 @@ spring:
 
   output.ansi.enabled: ALWAYS
 
-logging.level:
-  org.springframework:
-    orm.jpa: INFO
-    transaction: INFO
-    transaction.interceptor: INFO
-    orm.jpa.JpaTransactionManager: INFO
-  com.example.bankcards: INFO
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  level:
+    org.springframework:
+      orm.jpa: INFO
+      transaction: INFO
+      transaction.interceptor: INFO
+      orm.jpa.JpaTransactionManager: INFO
+    com.example.bankcards: INFO
 
 springdoc:
   override-with-generic-response: false # отключает автоматическую генерацию ответов из RestControllerAdvice
@@ -33,4 +38,4 @@ springdoc:
   swagger-ui.show-common-extensions: true # отображение ограничений @Min @Max и тп.
   api-docs.path: /api-docs
 
-
+jwt.lifetime: 30m

@@ -1,4 +1,4 @@
-package com.example.bankcards.security;
+package com.example.bankcards.security.service;
 
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
@@ -16,6 +16,10 @@ public class DaoUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
 
-        return new SecurityUser(user);
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getId().toString())
+                .password(user.getPassword())
+                .authorities(user.getRole().getAuthority())
+                .build();
     }
 }
