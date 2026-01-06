@@ -3,6 +3,7 @@ package com.example.bankcards.config;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.entity.UserRole;
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.security.JwtProvider;
 import com.example.bankcards.security.SecurityConfig;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.when;
 
 @TestConfiguration
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, JwtProvider.class})
 public class SecurityTestConfig {
 
     @Autowired

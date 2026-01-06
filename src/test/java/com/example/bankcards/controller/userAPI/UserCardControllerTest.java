@@ -7,6 +7,7 @@ import com.example.bankcards.dto.CardShortDto;
 import com.example.bankcards.dto.MoneyTransferRequest;
 import com.example.bankcards.dto.filters.CardSearchParam;
 import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.UserRole;
 import com.example.bankcards.exception.ErrorResponse;
 import com.example.bankcards.exception.MoneyTransferException;
 import com.example.bankcards.service.UserCardService;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,6 +31,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -45,12 +49,13 @@ class UserCardControllerTest {
     @MockitoBean
     private UserCardService userCardService;
 
-    private static final Long TEST_USER_ID = 2L;
+    private final Long TEST_USER_ID = 2L;
+    private final Authentication auth = new TestingAuthenticationToken(TEST_USER_ID, null, List.of(UserRole.ROLE_USER));
 
     @Test
     @SneakyThrows
     void getCards_ValidRequest_ReturnsCardShortDtoList() {
-        CardSearchParam cardSearchParam = CardSearchParam.builder()
+        CardSearchParam expectedCardSearchParam = CardSearchParam.builder()
                 .userId(TEST_USER_ID)
                 .number("1234")
                 .status(CardStatus.ACTIVE)
@@ -71,7 +76,7 @@ class UserCardControllerTest {
         String response = mockMvc.perform(get("/user/cards")
                         .param("number", "1234")
                         .param("status", "ACTIVE")
-                        .with(httpBasic("ivan", "ivan_password")))
+                        .with(authentication(auth)))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
@@ -79,7 +84,7 @@ class UserCardControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(userCardService, times(1)).getCards(cardSearchParam);
+        verify(userCardService, times(1)).getCards(expectedCardSearchParam);
         assertEquals(objectMapper.writeValueAsString(expectedCards), response);
     }
 
@@ -99,7 +104,7 @@ class UserCardControllerTest {
         String response = mockMvc.perform(post("/user/cards/block")
                         .content(partCardNumber)
                         .contentType(MediaType.TEXT_PLAIN)
-                        .with(httpBasic("ivan", "ivan_password")))
+                        .with(authentication(auth)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -125,7 +130,7 @@ class UserCardControllerTest {
         String response = mockMvc.perform(post("/user/cards/balance")
                         .content(partCardNumber)
                         .contentType(MediaType.TEXT_PLAIN)
-                        .with(httpBasic("ivan", "ivan_password")))
+                        .with(authentication(auth)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -155,7 +160,7 @@ class UserCardControllerTest {
         String response = mockMvc.perform(post("/user/cards/transfer")
                         .content(objectMapper.writeValueAsString(transferRequest))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(httpBasic("ivan", "ivan_password")))
+                        .with(authentication(auth)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -182,7 +187,7 @@ class UserCardControllerTest {
         String response = mockMvc.perform(post("/user/cards/transfer")
                         .content(objectMapper.writeValueAsString(transferRequest))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(httpBasic("ivan", "ivan_password")))
+                        .with(authentication(auth)))
                 .andExpect(status().isNotAcceptable())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
