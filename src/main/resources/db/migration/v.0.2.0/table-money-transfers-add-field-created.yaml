@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: table-money-transfers-add-field-created
+      author: VurtsGD
+      changes:
+        - addColumn:
+            tableName: money_transfers
+            columns:
+              - column:
+                  name: created
+                  type: timestamp
+                  constraints:
+                    nullable: false

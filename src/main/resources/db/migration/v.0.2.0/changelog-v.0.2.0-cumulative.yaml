@@ -2,3 +2,7 @@ databaseChangeLog:
   - include:
       file: users-add-prefix-ROLE.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: table-money-transfers-add-field-created.yaml
+      relativeToChangelogFile: true

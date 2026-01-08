@@ -13,12 +13,12 @@ public class UserSpecifications {
         return nameLike(param.getUsername()).and(emailLike(param.getEmail()));
     }
 
-    public static Specification<User> nameLike(String name) {
-        if (name == null || name.isEmpty()) {
+    public static Specification<User> nameLike(String username) {
+        if (username == null || username.isEmpty()) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("name"), "%" + name + "%");
+                criteriaBuilder.like(root.get("username"), "%" + username + "%");
     }
 
 

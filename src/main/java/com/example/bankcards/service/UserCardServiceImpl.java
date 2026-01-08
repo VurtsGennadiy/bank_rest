@@ -89,14 +89,14 @@ public class UserCardServiceImpl implements UserCardService {
         String fromCardMaskedNumber = CardNumberMasker.mask(fromCard.getNumber());
         String toCardMaskedNumber = CardNumberMasker.mask(toCard.getNumber());
 
-        if (fromCard.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new MoneyTransferException("Insufficient funds on the card to perform the operation");
-        }
         if (CardStatus.ACTIVE != fromCard.getStatus()) {
             throw new MoneyTransferException(String.format("The card %s status is not ACTIVE", fromCardMaskedNumber));
         }
         if (CardStatus.ACTIVE != toCard.getStatus()) {
             throw new MoneyTransferException(String.format("The card %s status is not ACTIVE", toCardMaskedNumber));
+        }
+        if (fromCard.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new MoneyTransferException("Insufficient funds on the card to perform the operation");
         }
 
         MoneyTransfer transfer = MoneyTransfer.builder()
@@ -106,14 +106,10 @@ public class UserCardServiceImpl implements UserCardService {
                 .amount(request.getAmount())
                 .build();
 
-        try {
-            fromCard.setBalance(fromCard.getBalance().subtract(transfer.getAmount()));
-            toCard.setBalance(toCard.getBalance().add(transfer.getAmount()));
-            moneyTransferRepository.save(transfer);
-        } catch (Exception e) {
-            log.error("Error executing money transfer", e);
-            throw new MoneyTransferException("Error executing money transfer");
-        }
+        fromCard.setBalance(fromCard.getBalance().subtract(transfer.getAmount()));
+        toCard.setBalance(toCard.getBalance().add(transfer.getAmount()));
+        moneyTransferRepository.save(transfer);
+
         log.info("Success executing money transfer from: '{}' to: '{}' amount: '{}'",
                 fromCardMaskedNumber, toCardMaskedNumber, transfer.getAmount());
         return new CardBalanceDto(CardNumberMasker.mask(fromCard.getNumber()), fromCard.getBalance());
