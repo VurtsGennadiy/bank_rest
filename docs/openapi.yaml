@@ -16,16 +16,16 @@
   ],
   "tags": [
     {
-      "name": "User: карты",
-      "description": "Пользовательский API для действий с картами"
-    },
-    {
       "name": "Админ: Карты",
       "description": "API для управления картами пользователей"
     },
     {
       "name": "Админ: Пользователи",
       "description": "API для управления пользователями"
+    },
+    {
+      "name": "User: Карты",
+      "description": "Пользовательский API для действий с картами"
     }
   ],
   "paths": {
@@ -123,7 +123,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/admin/cards/activate": {
@@ -174,13 +179,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/user/cards/transfer": {
       "post": {
         "tags": [
-          "User: карты"
+          "User: Карты"
         ],
         "summary": "Перевести деньги между картами",
         "operationId": "transferMoney",
@@ -261,13 +271,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/user/cards/block": {
       "post": {
         "tags": [
-          "User: карты"
+          "User: Карты"
         ],
         "summary": "Создать запрос на блокировку карты",
         "operationId": "createBlockingCardRequest",
@@ -325,13 +340,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/user/cards/balance": {
       "post": {
         "tags": [
-          "User: карты"
+          "User: Карты"
         ],
         "summary": "Получить баланс карты",
         "description": "Использую POST метод для получения данных по карте, для того чтобы не передавать чувствительную информацию в параметрах запроса",
@@ -364,14 +384,21 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/auth": {
       "post": {
         "tags": [
-          "authorization-controller"
+          "Авторизация"
         ],
+        "summary": "Логин",
+        "description": "Авторизация в системе и получение JWT - токена",
         "operationId": "authorization",
         "requestBody": {
           "content": {
@@ -478,7 +505,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -520,7 +552,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/admin/cards": {
@@ -643,7 +680,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -699,14 +741,19 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       },
       "delete": {
         "tags": [
           "Админ: Карты"
         ],
         "summary": "Удаление карты",
-        "description": "Запрещено удалять карту имеющую не нулевой баланс",
+        "description": "Возможно удаление только пустой карты, то есть должны выполняться условия:\n1) Нулевой баланс карты\n2) Не совершались денежные транзакции, связанные с этой картой\n3) Не существует запроса на блокировку этой карты",
         "operationId": "deleteCard",
         "requestBody": {
           "description": "Номер карты",
@@ -743,7 +790,7 @@
             }
           },
           "406": {
-            "description": "Ошибка удаления карты",
+            "description": "Ошибка удаления карты: не нулевой баланс",
             "content": {
               "application/json": {
                 "schema": {
@@ -754,8 +801,16 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "Ошибка удаления карты: нарушение целостности данных"
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/admin/cards/get": {
@@ -807,13 +862,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/user/cards": {
       "get": {
         "tags": [
-          "User: карты"
+          "User: Карты"
         ],
         "summary": "Поиск карт пользователя",
         "description": "Поддерживается фильтрация и пагинация",
@@ -918,7 +978,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/admin/users/{userId}": {
@@ -979,7 +1044,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     },
     "/admin/cards/blocking-request": {
@@ -1077,7 +1147,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT authentication": []
+          }
+        ]
       }
     }
   },
@@ -1205,20 +1280,27 @@
       },
       "JwtRequest": {
         "type": "object",
+        "description": "Запрос аутентификации",
         "properties": {
           "username": {
-            "type": "string"
+            "type": "string",
+            "description": "имя пользователя",
+            "example": "username"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "description": "пароль пользователя",
+            "example": "very_secret_password"
           }
         }
       },
       "JwtResponse": {
         "type": "object",
+        "description": "Ответ на успешную аутентификацию",
         "properties": {
           "jwt": {
-            "type": "string"
+            "type": "string",
+            "description": "Токен JWT"
           }
         }
       },
@@ -1249,7 +1331,7 @@
               "ROLE_ADMIN",
               "ROLE_USER"
             ],
-            "example": "USER"
+            "example": "ROLE_USER"
           }
         }
       },
@@ -1278,7 +1360,7 @@
               "ROLE_ADMIN",
               "ROLE_USER"
             ],
-            "example": "USER"
+            "example": "ROLE_USER"
           },
           "password": {
             "type": "string",
@@ -1425,7 +1507,7 @@
               "ROLE_ADMIN",
               "ROLE_USER"
             ],
-            "example": "USER"
+            "example": "ROLE_USER"
           },
           "cards": {
             "type": "array",
@@ -1467,6 +1549,13 @@
             "example": false
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "JWT authentication": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

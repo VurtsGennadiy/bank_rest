@@ -26,6 +26,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         authenticationManager.authenticate(authToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
         String jwt = jwtProvider.generateToken(userDetails);
+        log.info("User {} authorized", userDetails.getUsername());
         return new JwtResponse(jwt);
     }
 }

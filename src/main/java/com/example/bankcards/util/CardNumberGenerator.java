@@ -1,7 +1,10 @@
 package com.example.bankcards.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Random;
 
+@UtilityClass
 public class CardNumberGenerator {
     /**
      * Генерирует валидный 16-значный номер карты платёжной системы "Мир",

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -34,9 +35,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @Tag(
-        name = "User: карты",
+        name = "User: Карты",
         description = "Пользовательский API для действий с картами"
 )
+@SecurityRequirement(name = "JWT authentication")
 public class UserCardController {
     private final UserCardService userCardService;
     private final String datePattern = "yyyy-MM-dd";

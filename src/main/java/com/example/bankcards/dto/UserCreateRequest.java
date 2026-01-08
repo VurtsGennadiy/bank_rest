@@ -30,7 +30,7 @@ public class UserCreateRequest {
     String email;
 
     @NotNull
-    @Schema(description = "роль пользователя", example = "USER")
+    @Schema(description = "роль пользователя", example = "ROLE_USER")
     UserRole role;
 
     @NotNull

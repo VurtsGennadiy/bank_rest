@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -37,9 +38,11 @@ import java.util.List;
         name = "Админ: Карты",
         description = "API для управления картами пользователей"
 )
+@SecurityRequirement(name = "JWT authentication")
 public class AdminCardController {
     private final AdminCardService adminCardService;
     private final String datePattern = "yyyy-MM-dd";
+
 
     @Operation(summary = "Создание новой карты", responses = {
             @ApiResponse(responseCode = "201", description = "Карта создана"),
@@ -60,17 +63,22 @@ public class AdminCardController {
         return adminCardService.createNewCard(cardRequest);
     }
 
-    @Operation(summary = "Удаление карты", description = "Запрещено удалять карту имеющую не нулевой баланс",
+    @Operation(summary = "Удаление карты", description = """
+            Возможно удаление только пустой карты, то есть должны выполняться условия:
+            1) Нулевой баланс карты
+            2) Не совершались денежные транзакции, связанные с этой картой
+            3) Не существует запроса на блокировку этой карты""",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Карта удалена"),
                     @ApiResponse(responseCode = "404", description = "Карта не найдена",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class,
                                     example = """
                                             {"error": "Card with number **** **** **** 1234 not found"}"""))),
-                    @ApiResponse(responseCode = "406", description = "Ошибка удаления карты",
+                    @ApiResponse(responseCode = "406", description = "Ошибка удаления карты: не нулевой баланс",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class,
                                     example = """
-                                            {"error": "Card with number **** **** **** 1234 has non-zero balance"}""")))},
+                                            {"error": "Card with number **** **** **** 1234 has non-zero balance"}"""))),
+                    @ApiResponse(responseCode = "409", description = "Ошибка удаления карты: нарушение целостности данных")},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Номер карты",
                     content = @Content(mediaType = "text/plain",
                             schema = @Schema(implementation = String.class, example = "1234567876543210")))
